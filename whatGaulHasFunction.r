@@ -16,10 +16,7 @@
 ## Set directory and load libraries
 rm(list=ls())
 
-if(!require(pacman)) {
-  install.packages("pacman"); require(pacman)}
-
-pacman::p_load(data.table, plyr, dplyr, rgdal, fuzzyjoin)
+pacman::p_load(data.table, ggplot2, magrittr, reshape2, plyr, Hmisc, dplyr, fuzzyjoin)
 
 ## OS locals
 os <- .Platform$OS.type
