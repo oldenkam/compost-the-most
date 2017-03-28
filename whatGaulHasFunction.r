@@ -19,7 +19,7 @@ rm(list=ls())
 if(!require(pacman)) {
   install.packages("pacman"); require(pacman)}
 
-pacman::p_load(data.table, ggplot2, magrittr, reshape2, plyr, dplyr, rgdal, fuzzyjoin)
+pacman::p_load(data.table, plyr, dplyr, rgdal, fuzzyjoin)
 
 ## OS locals
 os <- .Platform$OS.type
@@ -38,21 +38,21 @@ setwd(work_dir)
 
 whatGaulHas <- function(country, input, near = FALSE, recent = TRUE, strDist = 2){
   if(exists("GaulDict")){
-    if(country %in% GaulDict$ADM0_NAME){    
-      gaulSubset <- GaulDict[GaulDict$ADM0_NAME == country,]
-      gaulSubset$matcher <- str_replace_all(tolower(gsub(" ", "", gaulSubset$GAUL_NAME, fixed = TRUE)), "[[:punct:]]", '')
+    if(country %in% GaulDict$fuzzy.country){    
+      gaulSubset <- GaulDict[GaulDict$fuzzy.country == country,]
+      gaulSubset$matcher <- str_replace_all(tolower(gsub(" ", "", gaulSubset$fuzzy.name, fixed = TRUE)), "[[:punct:]]", '')
       input <- as.data.frame(input)
       input$matcher <- str_replace_all(tolower(gsub(" ", "", input$input, fixed = TRUE)), "[[:punct:]]", '')
       input <- as.data.frame(input) %>%
             stringdist_left_join(gaulSubset, by = c("matcher" = "matcher"), max_dist = strDist)
       input <- subset(input, select=c(-matcher.x, -matcher.y, -V1))
       if(near == FALSE){
-        if(any(input$input == input$GAUL_NAME)){
-          input <- input[input$input == input$GAUL_NAME,]
+        if(any(input$input == input$fuzzy.name)){
+          input <- input[input$input == input$fuzzy.name,]
         }
       }
       if(recent == TRUE){
-        input <- do.call(rbind, by(input, input$GAUL_NAME, function(x) x[which.max(x$year), ]))
+        input <- do.call(rbind, by(input, input$fuzzy.name, function(x) x[which.max(x$fuzzy.year), ]))
       }
       return(tbl_df(input))
     }else{
