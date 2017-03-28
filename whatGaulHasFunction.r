@@ -3,11 +3,11 @@
 ## Editing Author: oldenkam
 ## Date: 3/14/2017
 ## Purpose: 
-## whatGaulHas is a function that returns a closest string match to a user's subString arguement. This function returns that match's
+## whatGaulHas is a function that returns a closest string match to a user's string. This function returns that match's
 ## relavant information. The first argument, country is a correctly spelled and correctly cased Admin 0 name string that subsets 
-## possible matches to increase spatial accuracy and curate results. The second argument, subString is a string the user is seeking
-## to validate against our dictionary of existing strings. includeNear is an optional argument that still includes close matches 
-## even if a exact match was detected. recent is an optional arguement that curates only the most recent years
+## possible matches to increase spatial accuracy and curate results. The second argument, input is a string the user is seeking
+## to validate against our dictionary of existing strings. near is an optional argument that still includes close matches 
+## even if a exact match was detected. recent is an optional arguement that curates guesses to only the most recent year that it exists.
 
 #########################################################################################################
 
@@ -31,7 +31,7 @@ setwd(work_dir)
 
 ### Step 2: Import Data #################################################################################
 
-### Define function #############################################################################
+### Define function #####################################################################################
 
 whatGaulHas <- function(country, input, near = FALSE, recent = TRUE, strDist = 2){
   if(exists("GaulDict")){
