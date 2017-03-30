@@ -26,7 +26,7 @@ if (os == "windows") {
   j <- "/home/j/"
 }
 
-work_dir <- paste0(j, "temp/oldena/projects/AdminDictionary/")
+work_dir <- paste0(j, "temp/oldena/projects/AdminDictionary")
 setwd(work_dir)
 
 ### Step 2: Import Data #################################################################################
@@ -43,13 +43,17 @@ whatGaulHas <- function(country, input, near = FALSE, recent = TRUE, strDist = 2
       input <- as.data.frame(input) %>%
             stringdist_left_join(gaulSubset, by = c("matcher" = "matcher"), max_dist = strDist)
       input <- subset(input, select=c(-matcher.x, -matcher.y, -V1))
-      if(near == FALSE){
-        if(any(input$input == input$fuzzy.name)){
-          input <- input[input$input == input$fuzzy.name,]
+      if(any(!is.na(input$fuzzy.name))){
+        if(near == FALSE){
+          if(any(input$input == input$fuzzy.name)){
+            input <- input[input$input == input$fuzzy.name,]
+          }
         }
-      }
-      if(recent == TRUE){
-        input <- do.call(rbind, by(input, input$fuzzy.name, function(x) x[which.max(x$fuzzy.year), ]))
+        if(recent == TRUE){
+          input <- do.call(rbind, by(input, input$fuzzy.name, function(x) x[which.max(x$fuzzy.year), ]))
+        }
+      }else{
+        print("No partial or exact match was detected for this input.")
       }
       return(tbl_df(input))
     }else{
@@ -60,6 +64,3 @@ whatGaulHas <- function(country, input, near = FALSE, recent = TRUE, strDist = 2
       print('Please rerun script, dictionary has been loaded')
     }
 }
-
-
-
