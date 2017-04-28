@@ -53,7 +53,7 @@ where_ingaul <- function(lat, lon, year, lower=FALSE){
           message(sprintf("Gaul admin2 from the year %s loaded in!", cur_year))
         }
       }else{
-        message("Unacceptable year, please input year from 1990-2015")
+        message("Unacceptable year, please input year from 1990-2014")
       }
     }
     if(exists("default_shp") & hasArg("lat") & hasArg( "lon")){
