@@ -5,17 +5,17 @@
 ## Purpose:
 ##
 ## findgeo()
-## findgeo() is a function that searches DHS data, GAUL data, and GADM data location names and returns
-## matches based on your search_for string. The first argument, search_for, is a string that the user 
-## would like to see if we have lcoations for. The second argument, iso, is an optional argument used to 
-## curate possible guesses by only allowing matches within like iso3 codes. The third argument, near, is 
-## a logical  argument that will curate away like guesses should an exact match exist to your search_for. 
-## The fourth argument, recent is another logical argument that lets you curate away past iterations of 
-## a location's geometry. The fifth and final argument, dist, is a numerical argument that sets the 
-## string matching tolerance- higher number more results. source is a subsetting argument that takes 
-## three inputs, either 'GAUL', 'GADM', or 'codebook' and returns just results from the specified source
-## The purpose of this function is to quickly illustrate what features exist in our shapefile library 
-## that we may have geometry for, this is not a definitive resource. 
+## findgeo() is a function that searches codebook data, GAUL data, and GADM data location names and 
+## returns matches based on your search_for string. The first argument, search_for, is a string that the
+## user would like to see if we have lcoations for. The second argument, iso, is an optional argument 
+## used to curate possible guesses by only allowing matches within like iso3 codes. The third argument,
+## near, is a logical  argument that will curate away like guesses should an exact match exist to your 
+## search_for. The fourth argument, recent is another logical argument that lets you curate away past 
+## iterations of a location's geometry. The fifth and final argument, dist, is a numerical argument that
+## sets the string matching tolerance- higher number more results. source is a subsetting argument that 
+## takes three inputs, either 'GAUL', 'GADM', or 'codebook' and returns just results from the specified 
+## sourceThe purpose of this function is to quickly illustrate what features exist in our shapefile
+## library that we may have geometry for, this is not a definitive resource. 
 ##
 ## moreInfo()
 ## findgeo() returns a data table which carries brief information on existing features. Included in that
@@ -60,7 +60,6 @@ if(!exists("GADM_info_features")){
   GADM_info_features <<- fread("gadm_info_features.csv")
   message('GADM information dictionary has been loaded')
 }
-
 
 
 ### Define findGeo function ############################################################################
