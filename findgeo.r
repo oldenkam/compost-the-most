@@ -175,10 +175,10 @@ moreinfo <- function(infoID) {
   if (find_info$source == 'codebook') {
     result <-
       codebook_inventory[codebook_inventory$more_info_id == find_info$more_info_id, ]
-  } else if (find_info$source == 'GAUL') {
+  } else if (find_info$source == 'gaul') {
     result <-
       gaul_inventory[gaul_inventory$more_info_id == find_info$more_info_id, ]
-  } else if (find_info$source == 'GADM') {
+  } else if (find_info$source == 'gadm') {
     result <-
       gadm_inventory[gadm_inventory$more_info_id == find_info$more_info_id, ]
   }
