@@ -25,8 +25,10 @@ nrow(dose.events)
 org.caps <- org.caps$deviceId
 
 ##Take
-dose.events <- filter(dose.events, deviceId %!in% org.caps)
+dose.events <- mutate(dose.events, pilot = deviceId %!in% org.caps)
 nrow(dose.events)
+
+dose.events <- filter(dose.events, eventValue == 'TAKE')
 
 dose.events <-
   mutate(dose.events, owner = tolower(owner), drug = tolower(drug))
@@ -47,3 +49,5 @@ dose.events <-
     !str_detect(owner, 'chuks')
     )
 nrow(dose.events)
+
+fwrite(dose.events, '/Users/adamoldenkamp/Desktop/Monthly Reporting/dose events clean.csv')
