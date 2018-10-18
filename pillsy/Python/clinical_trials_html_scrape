@@ -1,0 +1,203 @@
+# -*- coding: utf-8 -*-
+"""
+Spyder Editor
+
+This is a temporary script file.
+"""
+
+from bs4 import BeautifulSoup
+import csv
+import requests
+import pandas as pd
+import codecs
+import urllib3
+import re
+
+
+##################### FOR SCRAPING WEB PAGES ##################################
+
+df=pd.read_csv("Upcoming Clinical Trials.csv", encoding = "ISO-8859-1")
+df['Contact'] = df['Contact'].astype(str)
+
+
+for index, row in df.iterrows():
+    if len(row['URL'])==43:
+        response = requests.get(row['URL'])
+        soup = BeautifulSoup(response.content, "html.parser")
+        soup = soup.find("div", class_="table_cover")
+        if soup != None:
+            print(row['URL'])
+            soup = soup.text
+            soup = soup.split("Contact: ", 1)
+            if len(soup) > 1:
+                soup = soup[1]
+                soup = soup.replace("\n", " ")
+                soup = soup.replace("\xa0", " ")
+                soup = soup.replace("    ", " ")
+                soup = soup.replace("   ", " ")
+                soup = soup.rstrip()
+                soup = soup.replace("Contact:", " ---AND--- ") 
+                df.at[index, 'Contact'] = soup
+                print(index)
+            else:
+                print('No Contact Information')
+        else:
+            print('Entry did not work.', index)
+            continue
+        
+df.to_csv('Clinical Trials.csv', sep='\t', encoding='utf-8')    
+        
+##################### FOR SPLITTING RESULT ####################################
+
+
+df=pd.read_csv("Clinical Trials.csv", encoding = "ISO-8859-1")
+df['Contact'] = df['Contact'].astype(str)
+df['First Contact: Name'] = df['First Contact: Name'].astype(str)
+df['First Contact: Email'] = df['First Contact: Email'].astype(str)
+df['First Contact: Phone'] = df['First Contact: Phone'].astype(str)
+#df=df.head(4)
+
+#phone_pattern = re.compile(r'-?\d+\.?\d*')
+
+#phone_pattern = re.compile(r'\d+.?\d*')
+
+email_pattern = re.compile(r"[\w\.-]+@[\w\-.-]+")
+name_pattern = re.compile(r'^[aA-zZ]+$', flags = re.M)
+
+
+for index, row in df.iterrows():
+    print('------------------------------------')
+    contacts = row['Contact'].split("---AND---")
+    
+    if None not in contacts:
+        parse_con = contacts[0].replace(",", " ")
+        parse_con = re.sub(r'(\d)\s+(\d)', r'\1\2', parse_con)
+        
+        email = email_pattern.findall(parse_con)
+        
+        name = parse_con
+        
+        if len(email) > 0:
+            email = email[0]
+        else:
+            email = 'nan'
+             
+################################ NAME MANAGEMENT ##############################
+        if len(name) > 0 :    
+            if len(email) > 0:
+                name = name.replace(email, '')
+            else:
+                pass
+        else:
+            name = 'nan'
+        
+        
+        if len(name) == 0:
+            name = 'nan'
+        else:
+            name = name.rstrip()
+                
+        print(name)
+        print(email)
+        
+        df.at[index, 'First Contact: Name'] = name
+        df.at[index, 'First Contact: Email'] = email
+        df.at[index, '# of Contacts'] = len(contacts)    
+        
+df['# of Contacts'] = df['# of Contacts'].astype(int)
+
+df.to_csv('Clinical Trials_Contacts.csv', sep='\t', encoding='utf-8')    
+   
+###############################################################################
+###############################################################################
+###############################################################################
+
+df=pd.read_csv("Clinical Trials_Geograpahy.csv", encoding = "ISO-8859-1")
+df['Contact'] = df['Contact'].astype(str)
+df['Second Contact: Name & Number'] = df['Second Contact: Name & Number'].astype(str)
+df['Second Contact: Email'] = df['Second Contact: Email'].astype(str)
+df['Locations'] = df['Locations'].astype(str)
+
+email_pattern = re.compile(r"[\w\.-]+@[\w\-.-]+")
+name_pattern = re.compile(r'^[aA-zZ]+$', flags = re.M)
+
+
+for index, row in df.iterrows():
+    print('------------------------------------')
+    contacts = row['Contact'].split("---AND---")
+    if None not in contacts and len(contacts) > 1:
+        parse_con = contacts[1].replace(",", " ")
+        parse_con = re.sub(r'(\d)\s+(\d)', r'\1\2', parse_con)    
+        email = email_pattern.findall(parse_con)
+        name = parse_con
+        if len(email) > 0:
+            email = email[0]
+        else:
+            email = 'nan'
+             
+################################ NAME MANAGEMENT ##############################
+        if len(name) > 0 :    
+            if len(email) > 0:
+                name = name.replace(email, '')
+            else:
+                pass
+
+        else:
+            name = 'nan'
+        
+        
+        if len(name) == 0:
+            name = 'nan'
+        else:
+            name = name.rstrip()
+                   
+        df.at[index, 'Second Contact: Name & Number'] = name
+        df.at[index, 'Second Contact: Email'] = email
+
+df.to_csv('Clinical Trials_nowgeo.csv', sep='\t', encoding='utf-8')    
+        
+
+
+
+############################## Geographic Split ################################
+
+
+
+df=pd.read_csv("Clinical Trials_nowgeo.csv", encoding = "ISO-8859-1")
+df['Contact'] = df['Contact'].astype(str)
+df['First Contact: Name & Number'] = df['First Contact: Name & Number'].astype(str)
+df['First Contact: Email'] = df['First Contact: Email'].astype(str)
+df['Locations'] = df['Locations'].astype(str)
+
+
+for index, row in df.iterrows():
+    print('------------------------------------')
+    print(row['URL'])
+    country = row['Locations']
+    country = country.split('|')
+    if None not in country:
+        cont = list()
+        for duck in country:
+            duck = duck.split(',')
+            duck = duck[-1]
+            duck = duck.lstrip()
+            if duck not in cont:
+                cont.append(duck)
+            else:
+                continue
+        cont.sort()
+        cont = ', '.join(cont)
+        print(cont)
+        df.at[index, 'Location: Countries'] = cont
+
+
+df.to_csv('Clinical Trials_Final.csv', sep='\t', encoding='utf-8')    
+  
+# phone_pattern = re.compile(r'\d+')
+
+# karn = 'CÃÂÃÂ©cile LE PECHOUX  MD 0142114757 ext +33'
+# phone = phone_pattern.findall(karn)
+
+# re.search(r'\d', inputString)
+
+# karn.split(phone_pattern, 1)
